@@ -63,9 +63,10 @@ switchMap();
 
 //Task 3
 
+var makepins = genObj(8);
 
 function Makepin() {
-  var makepins = genObj(8);
+  //var makepins = genObj(8);
   var documentFragment = document.createDocumentFragment();
   
   for (var i = 0; i < makepins.length; i++) {
@@ -81,9 +82,13 @@ function Makepin() {
     img.style.draggable = "false";
 	
 	button.appendChild(img);
+	button.appendChild(img);
     documentFragment.appendChild(button);
    }
+   //console.log(documentFragment);
   return documentFragment;
+  
+  //return button;
 }
 
 //Task 4
@@ -99,6 +104,47 @@ renderPins();
 
 //Task 5
 
+function typeRoom(type) {
+	switch (type) {
+		case flat: 'Квартира'; 
+		case house:  'Дом'; 
+		case bungalo: 'Бунгало';  
+	}
+}
+
+
+
+function fillCard() {
+	var template = document.querySelector('template');
+	var post = template.content;
+	
+	post.cloneNode(true);
+	
+	
+	
+	var title = post.querySelector('h3');
+	var address = post.querySelector('p small');
+	var price = post.querySelector('.popup__price');
+	var type = post.querySelector('h4');
+
+
+	title.textContent = makepins[0].offer.title;
+	address.textContent = makepins[0].offer.address;
+	price.textContent = makepins[0].offer.price + " &#x20bd;/ночь";
+	type.textContent = makepins[0].offer.type;
+
+	var divtest = document.createElement("div");
+	var textDiv = document.createTextNode("Hello world");
+	divtest.appendChild(textDiv);
+	
+	
+	var mapPins = document.querySelector('.map__pins');	
+	var map__filters = document.querySelector('.map__filters-container');
+	map__filters.before(mapPins, divtest);
+	//map__filters.insertAdjacentHTML('beforebegin', divtest);
+}
+
+fillCard();
 
 
 
