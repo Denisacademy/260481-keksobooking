@@ -234,9 +234,7 @@ function buttonClose(src) {
   popupClose.forEach(function (elem) {
     elem.addEventListener("click", function(evt) {
       evt.currentTarget.parentElement.classList.add('hidden');
-      console.log(evt.currentTarget.parentElement.classList);        //src.classList.add('hidden');
-    
-    });
+     });
   });
 }
 
