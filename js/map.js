@@ -1,20 +1,28 @@
 //Task 1
-var TITLE = ["Большая уютная квартира", "Маленькая неуютная квартира", "Огромный прекрасный дворец", "Маленький ужасный дворец", "Красивый гостевой домик", "Некрасивый негостеприимный домик", "Уютное бунгало далеко от моря", "Неуютное бунгало по колено в воде"];
-var TYPE = {
+var TITLES = ["Большая уютная квартира", "Маленькая неуютная квартира", "Огромный прекрасный дворец", "Маленький ужасный дворец", "Красивый гостевой домик", "Некрасивый негостеприимный домик", "Уютное бунгало далеко от моря", "Неуютное бунгало по колено в воде"];
+var TYPES = {
   'flat': 'Квартира',
   'bungalo': 'Бунгало',
   'house': 'Дом'
 };
-var CHECKIN = ['12:00', '13:00', '14:00'];
-var CHECKOUT = ['12:00', '13:00', '14:00'];
+var NUMBER_OFFER = 8;
+var CHECK_TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ["wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"];
- 
+var PRICES = { 'flat' : 1000, 'bungalo' : 0, 'house' : 5000, 'palace' : 10000 };
 var ESC_BUTTON = 27;
-var fieldset = document.querySelectorAll('fieldset');
- 
-var mainPin = document.querySelector(".map__pin--main");
+
 var map = document.querySelector(".map");
+var mapPins = document.querySelector('.map__pins');
+var mainPin = document.querySelector(".map__pin--main");
+var fieldset = document.querySelectorAll('fieldset');
+var noticeForm = document.querySelector(".notice__form");
 var address = document.querySelector('#address');
+var timein = document.querySelector('#timein');
+var timeout = document.querySelector('#timeout');
+var priceField = document.querySelector("#price")
+var typeField = document.querySelector("#type")
+
+
 
 //Удаляет класс у элемента
 function removeClass(selector, className) {
@@ -31,7 +39,7 @@ function getRandomBetween(min, max) {
 function fillOffersData() {
   var offers = [];
  
-  for (var i = 0; i < 8; i++) {
+  for (var i = 0; i < NUMBER_OFFER; i++) {
  
     var X_LOCATION = getRandomBetween(300, 900);
     var Y_LOCATION = getRandomBetween(150, 500);
@@ -45,18 +53,18 @@ function fillOffersData() {
         'avatar': 'img/avatars/user0' + (i + 1) + '.png',
       },
       'offer': {
-        'title': TITLE[i],
+        'title': TITLES[i],
         'address': X_LOCATION + " , " + Y_LOCATION,
         'price': getRandomBetween(1000, 1000000),
         'type': typeRoom(),
         'rooms': getRandomBetween(1, 5),
         'guests': getRandomBetween(1, 10),
-        'checkin': CHECKIN[getRandomBetween(0, 2)],
-        'checkout': CHECKOUT[getRandomBetween(0, 2)],
+        'checkin': CHECK_TIMES[getRandomBetween(0, 2)],
+        'checkout': CHECK_TIMES[getRandomBetween(0, 2)],
         'features': feature,
- 
-        'description': " ",
-        'photos': ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
+         'description': " ",
+        'photos': [
+          'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
           'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
           'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
         ]
@@ -68,12 +76,11 @@ function fillOffersData() {
     })
   }
   return offers;
- 
 }
  
 //Тип команаты
 function typeRoom() {
-  var keys = Object.keys(TYPE);
+  var keys = Object.keys(TYPES);
   return keys[Math.floor(Math.random() * keys.length)];
  
 }
@@ -95,7 +102,6 @@ function makePin() {
     button.style.left = offers[i].location.x + "px";
     button.style.top = offers[i].location.y + "px";
     button.classList.add('map__pin');
- 
     var img = document.createElement('img');
  
     img.src = offers[i].author.avatar;
@@ -105,19 +111,17 @@ function makePin() {
     button.appendChild(img);
     documentFragment.appendChild(button);
   });
- 
-  return documentFragment;
- 
+  
+   return documentFragment;
 }
  
 //Task 4
 //Отображаем на карте метки
  
 function renderPins() {
-  var mapPins = document.querySelector('.map .map__pins');
+  //var mapPins = document.querySelector('.map .map__pins');
   var donePins = makePin();
   mapPins.appendChild(donePins);
- 
 }
  
 //Task 5
@@ -134,8 +138,8 @@ function addPhoto(arr) {
     li.querySelector('img').width = '70';
     fragment.appendChild(li);
   });
+  
   return fragment;
- 
 }
  
 //Случайный выбор удобств
@@ -146,8 +150,8 @@ function addFeature(arr) {
     li.className = "feature " + "feature--" + arr.offer.features[i];
     fragment.appendChild(li);
   });
+  
   return fragment;
- 
 }
  
 function fillCard() {
@@ -155,14 +159,13 @@ function fillCard() {
   var template = document.querySelector('template').content;
   var fragment = document.createDocumentFragment();
   var mapFilters = document.querySelector('.map__filters-container');
- 
-  offers.forEach(function(elem) {
+   offers.forEach(function(elem) {
     var mapCard = template.querySelector(".map__card").cloneNode(true);
     mapCard.classList.add('hidden');
     mapCard.querySelector('h3').textContent = elem.offer.title; //title
     mapCard.querySelector('p small').textContent = elem.offer.address;
     mapCard.querySelector('.popup__price').textContent = elem.offer.price + "\u20BD" + "/ночь";
-    mapCard.querySelector('h4').textContent = TYPE[elem.offer.type]; //type
+    mapCard.querySelector('h4').textContent = TYPES[elem.offer.type]; //type
     mapCard.querySelector('h4 + p').textContent = elem.offer.rooms + " комнаты для " + elem.offer.guests + " гостей"; //
     mapCard.querySelector('h4 + p + p').textContent = "Заезд после " + elem.offer.checkin + ", выезд до " + elem.offer.checkout;
     mapCard.querySelector('.popup__features').innerHTML = "";
@@ -173,37 +176,30 @@ function fillCard() {
     mapCard.querySelector('.popup__pictures').appendChild(addPhoto(elem.offer.photos));
     fragment.appendChild(mapCard);
   });
- 
   map.insertBefore(fragment, mapFilters);
-  //map__filters.insertAdjacentHTML('beforebegin', divtest);
- 
 }
  
 //----------------------
 //в поле адрес указываем координаты метки
-address.value = address.value = mainPin.offsetLeft + " , " + mainPin.offsetHeight;
-
+address.value = address.value = mainPin.offsetLeft + " , " + mainPin.offsetTop;
 //Определяем метку 
 function findPin() {
-  var mapPins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
-  mapPins.forEach(function(elem) {
+  var pins = mapPins.querySelectorAll('.map__pin:not(.map__pin--main)');
+  pins.forEach(function(elem) {
     elem.addEventListener('click', function(evt) {
       closeAdver();
  
       if (this.className == 'map__pin') {
         var src = this.firstElementChild.src;
-        openAdver(src);
-        //buttonClose();
+        openAd(src);
       }
-      //buttonClose();
       document.addEventListener('keydown', escButton);
-      
     });
   });
 }
 
 //открываем объявление 
-function openAdver(src) {
+function openAd(src) {
   var mapCard = document.querySelectorAll('.map__card');
   mapCard.forEach(function(elem) {
     if (src == elem.firstElementChild.src) {
@@ -246,14 +242,24 @@ function disableFieldset() {
 }
  
 disableFieldset();
+
+
+//синхронизация поле заезда и выезда
+timein.addEventListener('click', function(evt) {
+  timeout.selectedIndex = evt.currentTarget.selectedIndex;
+});
+timeout.addEventListener('click', function(evt) {
+  timein.selectedIndex = evt.currentTarget.selectedIndex;
+});
  
 // Активация карты
 function activateMap() {
   switchMap();
-  removeClass('.notice__form', 'notice__form--disabled');
+  noticeForm.classList.remove('notice__form--disabled');
   renderPins();
   fillCard();
   findPin();
+  //priceRoom();
   buttonClose();
   fieldset.forEach(function(elem) {
     elem.disabled = false;
@@ -264,3 +270,36 @@ function activateMap() {
 }
  
 mainPin.addEventListener('mouseup', activateMap);
+
+
+//Стоимость жилья
+/*
+function priceRoom() {
+  typeField.addEventListener("change", function() {
+    if(this.selectedIndex == 0) {
+      priceField.placeholder = PRICES[0];
+      }
+    else if(this.selectedIndex == 1) {
+      priceField.placeholder = PRICES[1];
+      }
+    else if(this.selectedIndex == 2) {
+      priceField.placeholder = PRICES[2];
+      }
+    else if(this.selectedIndex == 3) {
+      priceField.placeholder = PRICES[3];
+      }
+  });
+}
+*/
+typeField.addEventListener("change", function(evt) {
+  var type = evt.currentTarget.value;
+  priceField.placeholder = PRICES[type];
+});
+
+//Количество мест
+/*
+0 : 1
+1 : 2 || 1
+2 : 3 || 2 || 1
+3 : не для гостей
+*/
