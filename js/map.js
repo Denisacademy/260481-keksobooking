@@ -6,7 +6,7 @@ var TYPES = {
   'house': 'Дом'
 };
 var NUMBER_OFFER = 8;
-var CHECK_TIMES = ['12:00', '13:00', '14:00'];
+var CHECK_TIME = ['12:00', '13:00', '14:00'];
 var FEATURES = ["wifi", "dishwasher", "parking", "washer", "elevator", "conditioner"];
 var PRICES = { 'flat' : 1000, 'bungalo' : 0, 'house' : 5000, 'palace' : 10000 };
 var ESC_BUTTON = 27;
@@ -19,9 +19,10 @@ var noticeForm = document.querySelector(".notice__form");
 var address = document.querySelector('#address');
 var timein = document.querySelector('#timein');
 var timeout = document.querySelector('#timeout');
-var priceField = document.querySelector("#price")
-var typeField = document.querySelector("#type")
-
+var priceField = document.querySelector("#price");
+var typeField = document.querySelector("#type");
+var roomNumber = document.querySelector("#room_number");
+var capacityGuest = document.querySelector("#capacity");
 
 
 //Удаляет класс у элемента
@@ -59,8 +60,8 @@ function fillOffersData() {
         'type': typeRoom(),
         'rooms': getRandomBetween(1, 5),
         'guests': getRandomBetween(1, 10),
-        'checkin': CHECK_TIMES[getRandomBetween(0, 2)],
-        'checkout': CHECK_TIMES[getRandomBetween(0, 2)],
+        'checkin': CHECK_TIME[getRandomBetween(0, 2)],
+        'checkout': CHECK_TIME[getRandomBetween(0, 2)],
         'features': feature,
          'description': " ",
         'photos': [
@@ -298,8 +299,47 @@ typeField.addEventListener("change", function(evt) {
 
 //Количество мест
 /*
-0 : 1
-1 : 2 || 1
-2 : 3 || 2 || 1
-3 : не для гостей
+1 : 1
+2 : 1 || 2
+3 : 1 || 2 || 3
+100 : не для гостей
 */
+
+//Проверка на соответствие комнат и гостей.
+function checkRoom(value) {
+  for(var i = 0; i < capacityGuest.length; i++) {
+    capacityGuest[i].disabled = true;
+    }
+    /*
+    if(value == 100) {
+      capacityGuest[3].selected = true;
+    } else {
+      capacityGuest[2].selected = true;
+    }
+*/
+    value == 100 ? capacityGuest[3].selected = true : capacityGuest[2].selected = true;
+
+   switch (value) {
+     case '1':
+       capacityGuest[2].disabled = false;
+       break;
+     case '2':
+       capacityGuest[1].disabled = false;
+       capacityGuest[2].disabled = false;
+       break;
+     case '3':
+       capacityGuest[0].disabled = false;
+       capacityGuest[1].disabled = false;
+       capacityGuest[2].disabled = false;
+       break;
+     case '100':
+       capacityGuest[3].disabled = false;
+     default:
+       console.log("Ok");
+   }
+ }
+
+
+roomNumber.addEventListener('change', function(evt) {
+  checkRoom(evt.currentTarget.value);
+  });
